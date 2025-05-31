@@ -1,1 +1,14 @@
-as
+# Cloud Scraper Admin Panel
+
+This project scrapes quotes from [quotes.toscrape.com](https://quotes.toscrape.com), stores them in MongoDB Atlas, and displays them in a web admin panel.
+
+- "Scrape Now" button triggers real-time scraping
+- Backend built with Flask and BeautifulSoup
+- Frontend built with Next.js
+- Data stored in MongoDB Atlas
+- Backend hosted on Render, frontend on Vercel
+
+## Live Demo
+
+🔗 Frontend: https://your-vercel-app.vercel.app  
+🔗 Backend: https://your-render-api.onrender.com
