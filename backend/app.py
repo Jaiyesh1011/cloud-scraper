@@ -17,7 +17,6 @@ collection = db["books"]
 def home():
     return jsonify({"status": "Backend is running"}), 200
 
-# Route to scrape data
 @app.route('/scrape', methods=['GET'])
 def scrape():
     try:
@@ -39,7 +38,6 @@ def scrape():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Route to get all books
 @app.route('/books', methods=['GET'])
 def get_books():
     try:
@@ -48,12 +46,10 @@ def get_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Custom 404 JSON handler
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({"error": "Route not found"}), 404
 
-# Run server on 0.0.0.0 and PORT from environment (Render-compatible)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
