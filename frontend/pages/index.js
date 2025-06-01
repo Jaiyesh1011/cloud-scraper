@@ -9,15 +9,15 @@ export default function Home() {
     try {
       const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
       const json = await res.json();
-
+      console.log("Fetched data:", json, "Is array?", Array.isArray(json));
       if (Array.isArray(json)) {
         setData(json);
       } else {
-        console.error("Data is not an array:", json);
+        console.error("Fetched data is not an array");
         setData([]);
       }
     } catch (err) {
-      console.error("Failed to fetch or parse JSON", err);
+      console.error("Failed to fetch data", err);
       setData([]);
     } finally {
       setLoading(false);
@@ -31,8 +31,6 @@ export default function Home() {
       await fetchData();
     } catch (err) {
       console.error("Scraping failed", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -46,7 +44,7 @@ export default function Home() {
       <button onClick={handleScrape} disabled={loading}>
         {loading ? "Scraping..." : "Scrape Now"}
       </button>
-      <table border="1" cellPadding="10" style={{ marginTop: 20, minWidth: 500 }}>
+      <table border="1" cellPadding="10" style={{ marginTop: 20 }}>
         <thead>
           <tr>
             <th>Title</th>
