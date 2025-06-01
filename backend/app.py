@@ -13,6 +13,10 @@ client = MongoClient(os.environ["MONGO_URI"])
 db = client["scraper"]
 collection = db["books"]
 
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({"status": "Backend is running"}), 200
+
 # Route to scrape data
 @app.route('/scrape', methods=['GET'])
 def scrape():
