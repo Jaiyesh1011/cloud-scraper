@@ -3,18 +3,22 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
-      const text = await res.text();
-      console.log("Raw response:", text); // Debug raw response
-      const json = JSON.parse(text);
-      setData(json);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      
+      const result = await res.json();
+      if (result.status !== "success") throw new Error(result.message || "Invalid response");
+      
+      setData(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
-      console.error("Failed to fetch or parse JSON", err);
-      setData([]); // Clear data on error
+      setError(err.message);
+      setData([]);
     } finally {
       setLoading(false);
     }
@@ -22,11 +26,13 @@ export default function Home() {
 
   const handleScrape = async () => {
     setLoading(true);
+    setError(null);
     try {
-      await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
+      const scrapeRes = await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
+      if (!scrapeRes.ok) throw new Error("Scraping failed");
       await fetchData();
     } catch (err) {
-      console.error("Scraping failed", err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -42,6 +48,9 @@ export default function Home() {
       <button onClick={handleScrape} disabled={loading}>
         {loading ? "Scraping..." : "Scrape Now"}
       </button>
+      
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       <table border="1" cellPadding="10" style={{ marginTop: 20 }}>
         <thead>
           <tr>
@@ -51,7 +60,7 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(data) && data.length > 0 ? (
+          {data.length > 0 ? (
             data.map((item, index) => (
               <tr key={index}>
                 <td>{item.title}</td>
