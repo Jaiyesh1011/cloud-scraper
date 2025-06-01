@@ -48,12 +48,12 @@ def get_books():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Optional: Custom 404 handler
+# Custom 404 JSON handler
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({"error": "Route not found"}), 404
 
-# Bind to 0.0.0.0 for Render and use PORT from environment
+# Run server on 0.0.0.0 and PORT from environment (Render-compatible)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)

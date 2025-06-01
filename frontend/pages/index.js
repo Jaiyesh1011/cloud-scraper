@@ -8,10 +8,13 @@ export default function Home() {
     setLoading(true);
     try {
       const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
-      const json = await res.json();
+      const text = await res.text();
+      console.log("Raw response:", text); // Debug raw response
+      const json = JSON.parse(text);
       setData(json);
     } catch (err) {
-      console.error("Failed to fetch data", err);
+      console.error("Failed to fetch or parse JSON", err);
+      setData([]); // Clear data on error
     } finally {
       setLoading(false);
     }
@@ -24,6 +27,8 @@ export default function Home() {
       await fetchData();
     } catch (err) {
       console.error("Scraping failed", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,13 +37,12 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ padding: 20, fontFamily: "sans-serif" }}>
-      <h1>📚 Cloud Scraper Admin Panel</h1>
+    <div style={{ padding: 20 }}>
+      <h1>Cloud Scraper Admin Panel</h1>
       <button onClick={handleScrape} disabled={loading}>
         {loading ? "Scraping..." : "Scrape Now"}
       </button>
-
-      <table border="1" cellPadding="10" style={{ marginTop: 20, width: "100%" }}>
+      <table border="1" cellPadding="10" style={{ marginTop: 20 }}>
         <thead>
           <tr>
             <th>Title</th>
@@ -47,11 +51,7 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 && !loading ? (
-            <tr>
-              <td colSpan="3" style={{ textAlign: "center" }}>No data available</td>
-            </tr>
-          ) : (
+          {Array.isArray(data) && data.length > 0 ? (
             data.map((item, index) => (
               <tr key={index}>
                 <td>{item.title}</td>
@@ -59,6 +59,12 @@ export default function Home() {
                 <td>{item.stock}</td>
               </tr>
             ))
+          ) : (
+            <tr>
+              <td colSpan="3" style={{ textAlign: "center" }}>
+                {loading ? "Loading..." : "No data available"}
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
