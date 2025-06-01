@@ -7,27 +7,28 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("https://cloud-scraper-cbiy.onrender.com");
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      console.error("Failed to fetch data", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
+    const json = await res.json();
+    setData(json);
+  } catch (err) {
+    console.error("Failed to fetch data", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleScrape = async () => {
-    setLoading(true);
-    try {
-      await fetch("https://cloud-scraper-cbiy.onrender.com", { method: "POST" });
-      await fetchData();
-    } catch (err) {
-      console.error("Scraping failed", err);
-    }
-  };
+const handleScrape = async () => {
+  setLoading(true);
+  try {
+    await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
+    await fetchData();
+  } catch (err) {
+    console.error("Scraping failed", err);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
