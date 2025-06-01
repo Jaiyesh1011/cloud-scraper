@@ -6,23 +6,31 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-      
-      const result = await res.json();
-      if (result.status !== "success") throw new Error(result.message || "Invalid response");
-      
-      setData(Array.isArray(result.data) ? result.data : []);
-    } catch (err) {
-      setError(err.message);
-      setData([]);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
     }
-  };
+
+    const result = await res.json();
+    
+    // Ensure data is an array before setting state
+    if (!Array.isArray(result)) {  // Check if result is directly the array
+      throw new Error("Data is not in expected array format");
+    }
+
+    setData(result || []); // Fallback to empty array
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setError(err.message);
+    setData([]); // Reset to empty array on error
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleScrape = async () => {
     setLoading(true);
