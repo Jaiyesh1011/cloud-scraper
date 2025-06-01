@@ -8,38 +8,29 @@ export default function Home() {
     setLoading(true);
     try {
       const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
-      const json = await res.json();
-      console.log("Fetched data:", json, "Is array?", Array.isArray(json));
-      if (Array.isArray(json)) {
-        setData(json);
-      } else {
-        console.error("Fetched data is not an array");
-        setData([]);
-      }
+      const text = await res.text();
+      console.log("Raw response:", text); // Debug raw response
+      const json = JSON.parse(text);
+      setData(json);
     } catch (err) {
-      console.error("Failed to fetch data", err);
-      setData([]);
+      console.error("Failed to fetch or parse JSON", err);
+      setData([]); // Clear data on error
     } finally {
       setLoading(false);
     }
   };
 
   const handleScrape = async () => {
-  setLoading(true);
-  try {
-    await fetch("https://cloud-scraper-cbiy.onrender.com/scrape", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: "https://books.toscrape.com/" }) // change to your target URL
-    });
-    await fetchData();
-  } catch (err) {
-    console.error("Scraping failed", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    setLoading(true);
+    try {
+      await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
+      await fetchData();
+    } catch (err) {
+      console.error("Scraping failed", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
