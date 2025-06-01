@@ -8,7 +8,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Connect to MongoDB
 client = MongoClient(os.environ["MONGO_URI"])
 db = client["scraper"]
 collection = db["books"]
@@ -17,12 +16,32 @@ collection = db["books"]
 def home():
     return jsonify({"status": "Backend is running"}), 200
 
-@app.route("/scrape", methods=["POST"])
+@app.route("/scrape", methods=["GET"])  # <-- changed from POST to GET
 def scrape():
-    data = request.get_json()
-    url = data.get("url")
-    # your scraping logic here
-    return jsonify({"status": "success", "data": scraped_data})
+    url = "http://books.toscrape.com"
+    try:
+        res = requests.get(url)
+        soup = BeautifulSoup(res.text, "html.parser")
+        books = []
+
+        for book in soup.select(".product_pod"):
+            title = book.h3.a["title"]
+            price = book.select_one(".price_color").text.strip()
+            stock = book.select_one(".availability").text.strip()
+            books.append({
+                "title": title,
+                "price": price,
+                "stock": stock
+            })
+
+        # clear old data & insert new
+        collection.delete_many({})
+        collection.insert_many(books)
+
+        return jsonify({"status": "success", "data": books}), 200
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/books', methods=['GET'])
 def get_books():
