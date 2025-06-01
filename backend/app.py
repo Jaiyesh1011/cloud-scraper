@@ -20,32 +20,29 @@ def home():
 
  # Add this at top
 
-@app.route("/scrape", methods=["POST"])
+@app.route("/scrape", methods=["GET"])
 def scrape():
     try:
-        data = request.get_json()
-        url = data.get("url", "https://books.toscrape.com/")  # default fallback
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, "html.parser")
+        # Use a public JSON API (placeholder example)
+        res = requests.get("https://fakestoreapi.com/products?limit=5")
+        json_data = res.json()
 
         scraped_data = []
-        books = soup.select("article.product_pod")
-        for book in books:
-            title = book.h3.a["title"]
-            price = book.select_one(".price_color").text
-            stock = book.select_one(".instock.availability").text.strip()
+        for item in json_data:
             scraped_data.append({
-                "title": title,
-                "price": price,
-                "stock": stock
+                "title": item["title"],
+                "price": f"${item['price']}",
+                "stock": "In Stock"  # Fake API doesn't provide stock info
             })
 
-        collection.delete_many({})  # optional: clean old data
+        # Save to MongoDB
+        collection.delete_many({})  # clear old data
         collection.insert_many(scraped_data)
-        return jsonify({"status": "success", "data": scraped_data}), 200
 
+        return jsonify({"status": "success", "count": len(scraped_data)})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 @app.route('/books', methods=['GET'])
