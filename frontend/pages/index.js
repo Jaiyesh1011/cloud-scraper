@@ -7,7 +7,7 @@ export default function Home() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
+      const res = await fetch("https://cloud-scraper-cbiy.onrender.com");
       const json = await res.json();
       console.log("Fetched data:", json, "Is array?", Array.isArray(json));
       if (Array.isArray(json)) {
