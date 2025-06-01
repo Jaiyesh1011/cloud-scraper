@@ -46,10 +46,9 @@ def scrape():
 def get_books():
     try:
         data = list(collection.find({}, {'_id': 0}))
-        return jsonify({"status": "success", "data": data}), 200
+        return jsonify({"data": data}), 200  # Wrap in "data" key
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e), "data": []}), 500
-
+        return jsonify({"error": str(e), "data": []}), 500
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
