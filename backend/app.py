@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
-from flask import request 
 from pymongo import MongoClient
 import os
 
@@ -18,32 +17,12 @@ collection = db["books"]
 def home():
     return jsonify({"status": "Backend is running"}), 200
 
- # Add this at top
-
-@app.route("/scrape", methods=["GET"])
+@app.route("/scrape", methods=["POST"])
 def scrape():
-    try:
-        # Use a public JSON API (placeholder example)
-        res = requests.get("https://fakestoreapi.com/products?limit=5")
-        json_data = res.json()
-
-        scraped_data = []
-        for item in json_data:
-            scraped_data.append({
-                "title": item["title"],
-                "price": f"${item['price']}",
-                "stock": "In Stock"  # Fake API doesn't provide stock info
-            })
-
-        # Save to MongoDB
-        collection.delete_many({})  # clear old data
-        collection.insert_many(scraped_data)
-
-        return jsonify({"status": "success", "count": len(scraped_data)})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
+    data = request.get_json()
+    url = data.get("url")
+    # your scraping logic here
+    return jsonify({"status": "success", "data": scraped_data})
 
 @app.route('/books', methods=['GET'])
 def get_books():
