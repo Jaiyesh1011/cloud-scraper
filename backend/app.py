@@ -4,21 +4,11 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 import os
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# Rate limiting to prevent abuse
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
-
-# MongoDB setup
-client = MongoClient(os.environ.get("MONGO_URI", "mongodb://localhost:27017/"))
+client = MongoClient(os.environ["MONGO_URI"])
 db = client["scraper"]
 collection = db["books"]
 
@@ -26,12 +16,11 @@ collection = db["books"]
 def home():
     return jsonify({"status": "Backend is running"}), 200
 
-@app.route("/scrape", methods=["GET"])
-@limiter.limit("10 per hour")  # Prevent excessive scraping
+@app.route("/scrape", methods=["GET"])  # <-- changed from POST to GET
 def scrape():
     url = "http://books.toscrape.com"
     try:
-        res = requests.get(url, timeout=10)  # Add timeout
+        res = requests.get(url)
         soup = BeautifulSoup(res.text, "html.parser")
         books = []
 
@@ -45,11 +34,11 @@ def scrape():
                 "stock": stock
             })
 
-        # Clear old data & insert new
+        # clear old data & insert new
         collection.delete_many({})
         collection.insert_many(books)
 
-        return jsonify({"status": "success", "count": len(books)}), 200
+        return jsonify({"status": "success", "data": books}), 200
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -58,9 +47,13 @@ def scrape():
 def get_books():
     try:
         data = list(collection.find({}, {'_id': 0}))
-        return jsonify({"status": "success", "data": data}), 200
+        return jsonify(data), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"error": "Route not found"}), 404
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
