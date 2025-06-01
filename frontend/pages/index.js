@@ -25,14 +25,21 @@ export default function Home() {
   };
 
   const handleScrape = async () => {
-    setLoading(true);
-    try {
-      await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
-      await fetchData();
-    } catch (err) {
-      console.error("Scraping failed", err);
-    }
-  };
+  setLoading(true);
+  try {
+    await fetch("https://cloud-scraper-cbiy.onrender.com/scrape", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: "https://books.toscrape.com/" }) // change to your target URL
+    });
+    await fetchData();
+  } catch (err) {
+    console.error("Scraping failed", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchData();

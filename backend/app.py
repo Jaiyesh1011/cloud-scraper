@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
+from flask import request 
 from pymongo import MongoClient
 import os
 
@@ -17,12 +18,35 @@ collection = db["books"]
 def home():
     return jsonify({"status": "Backend is running"}), 200
 
+ # Add this at top
+
 @app.route("/scrape", methods=["POST"])
 def scrape():
-    data = request.get_json()
-    url = data.get("url")
-    # your scraping logic here
-    return jsonify({"status": "success", "data": scraped_data})
+    try:
+        data = request.get_json()
+        url = data.get("url", "https://books.toscrape.com/")  # default fallback
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        scraped_data = []
+        books = soup.select("article.product_pod")
+        for book in books:
+            title = book.h3.a["title"]
+            price = book.select_one(".price_color").text
+            stock = book.select_one(".instock.availability").text.strip()
+            scraped_data.append({
+                "title": title,
+                "price": price,
+                "stock": stock
+            })
+
+        collection.delete_many({})  # optional: clean old data
+        collection.insert_many(scraped_data)
+        return jsonify({"status": "success", "data": scraped_data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/books', methods=['GET'])
 def get_books():
