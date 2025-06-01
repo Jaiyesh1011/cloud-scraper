@@ -1,3 +1,5 @@
+// FILE: frontend/pages/index.js
+
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -5,34 +7,28 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("https://cloud-scraper-cbiy.onrender.com");
-      const json = await res.json();
-      console.log("Fetched data:", json, "Is array?", Array.isArray(json));
-      if (Array.isArray(json)) {
-        setData(json);
-      } else {
-        console.error("Fetched data is not an array");
-        setData([]);
-      }
-    } catch (err) {
-      console.error("Failed to fetch data", err);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const res = await fetch("https://cloud-scraper-cbiy.onrender.com/books");
+    const json = await res.json();
+    setData(json);
+  } catch (err) {
+    console.error("Failed to fetch data", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleScrape = async () => {
-    setLoading(true);
-    try {
-      await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
-      await fetchData();
-    } catch (err) {
-      console.error("Scraping failed", err);
-    }
-  };
+const handleScrape = async () => {
+  setLoading(true);
+  try {
+    await fetch("https://cloud-scraper-cbiy.onrender.com/scrape");
+    await fetchData();
+  } catch (err) {
+    console.error("Scraping failed", err);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
@@ -48,26 +44,16 @@ export default function Home() {
         <thead>
           <tr>
             <th>Title</th>
-            <th>Price</th>
-            <th>Stock</th>
+            <th>URL</th>
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(data) && data.length > 0 ? (
-            data.map((item, index) => (
-              <tr key={index}>
-                <td>{item.title}</td>
-                <td>{item.price}</td>
-                <td>{item.stock}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="3" style={{ textAlign: "center" }}>
-                {loading ? "Loading..." : "No data available"}
-              </td>
+          {data.map((item, index) => (
+            <tr key={index}>
+              <td>{item.title}</td>
+              <td><a href={item.url} target="_blank">Visit</a></td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
     </div>
