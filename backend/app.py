@@ -8,7 +8,9 @@ import os
 
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+from flask_cors import CORS
+CORS(app, origins=["*"])  # Temporary fix: allow all origins
+
 
 
 client = MongoClient(os.environ["MONGO_URI"])
