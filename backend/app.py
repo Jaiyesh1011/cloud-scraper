@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 import os
 
+
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://cloud-scraper.vercel.app"])
 
 client = MongoClient(os.environ["MONGO_URI"])
 db = client["scraper"]
