@@ -1,16 +1,13 @@
 {
-  "name": "cloud-scraper-frontend",
+  "name": "cloud-scraper",
   "version": "1.0.0",
-  
   "scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject"
-},
-
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "next": "14.1.0",
+    "next": "^14.1.0",  
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
