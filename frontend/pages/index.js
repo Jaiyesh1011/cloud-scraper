@@ -6,7 +6,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [inputUrl, setInputUrl] = useState("http://books.toscrape.com");
 
-  const BACKEND_URL = "https://cloud-scraper-cbiy.onrender.com"; // Your backend URL
+  const BACKEND_URL = "https://cloud-scraper-cbiy.onrender.com";
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,11 +44,11 @@ export default function Home() {
         throw new Error(errRes?.message || "Scraping failed");
       }
 
-      // Scrape successful, fetch updated data
+      
       await fetchData();
     } catch (err) {
       setError(err.message);
-      setLoading(false); // Stop loading on error
+      setLoading(false); 
     }
   };
 

@@ -23,7 +23,7 @@ def home():
 def scrape():
     try:
         data = request.get_json()
-        url = data.get("url", "http://books.toscrape.com")  # Default if not provided
+        url = data.get("url", "http://books.toscrape.com") 
 
         res = requests.get(url, timeout=10)
         soup = BeautifulSoup(res.text, "html.parser")
