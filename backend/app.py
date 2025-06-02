@@ -8,7 +8,8 @@ import os
 
 
 app = Flask(__name__)
-CORS(app, origins=["https://cloud-scraper.vercel.app"])
+CORS(app, supports_credentials=True)
+
 
 client = MongoClient(os.environ["MONGO_URI"])
 db = client["scraper"]
