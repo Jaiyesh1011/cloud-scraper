@@ -67,24 +67,24 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {loading && data.length === 0 ? (
-            <tr>
-              <td colSpan="3" style={{ textAlign: "center" }}>Loading...</td>
-            </tr>
-          ) : Array.isArray(data) && data.length > 0 ? (
-            data.map((item, idx) => (
-              <tr key={idx}>
-                <td>{item.title}</td>
-                <td>{item.price}</td>
-                <td>{item.stock}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="3" style={{ textAlign: "center" }}>No data available</td>
-            </tr>
-          )}
-        </tbody>
+  {loading && data.length === 0 ? (
+    <tr>
+      <td colSpan="3" style={{ textAlign: "center" }}>Loading...</td>
+    </tr>
+  ) : Array.isArray(data) && data.length > 0 ? (
+    data.map((item, idx) => (
+      <tr key={idx}>
+        <td>{item.title}</td>
+        <td>{item.price}</td>
+        <td>{item.stock}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="3" style={{ textAlign: "center" }}>No data available</td>
+    </tr>
+  )}
+</tbody>
       </table>
     </div>
   );
