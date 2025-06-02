@@ -8,9 +8,7 @@ import os
 
 
 app = Flask(__name__)
-from flask_cors import CORS
-CORS(app, origins=["*"])  # Temporary fix: allow all origins
-
+CORS(app, resources={r"/books": {"origins": "https://cloud-scraper.vercel.app"}})
 
 
 client = MongoClient(os.environ["MONGO_URI"])
