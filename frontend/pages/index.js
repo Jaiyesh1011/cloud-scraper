@@ -4,8 +4,9 @@ export default function Home() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [inputUrl, setInputUrl] = useState("http://books.toscrape.com");
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://cloud-scraper-cbiy.onrender.com"; // Fallback URL
+  const BACKEND_URL = "https://cloud-scraper-cbiy.onrender.com"; // Your backend URL
 
   const fetchData = async () => {
     setLoading(true);
@@ -30,11 +31,19 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
-      const scrapeRes = await fetch(`${BACKEND_URL}/scrape`);
+      const scrapeRes = await fetch(`${BACKEND_URL}/scrape`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: inputUrl }),
+      });
+
       if (!scrapeRes.ok) {
         const errRes = await scrapeRes.json().catch(() => null);
         throw new Error(errRes?.message || "Scraping failed");
       }
+
       // Scrape successful, fetch updated data
       await fetchData();
     } catch (err) {
@@ -50,7 +59,14 @@ export default function Home() {
   return (
     <div style={{ padding: 20, maxWidth: 1000, margin: "auto", backgroundColor: "#fff", borderRadius: 8, boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
       <h1 style={{ color: "#2c3e50", textAlign: "center" }}>Cloud Scraper Admin Panel</h1>
-      <div style={{ margin: "20px 0", display: "flex", justifyContent: "center" }}>
+
+      <div style={{ margin: "20px 0", display: "flex", justifyContent: "center", gap: 10 }}>
+        <input
+          type="text"
+          value={inputUrl}
+          onChange={(e) => setInputUrl(e.target.value)}
+          style={{ padding: 8, width: "70%", border: "1px solid #ccc", borderRadius: 4 }}
+        />
         <button onClick={handleScrape} disabled={loading}>
           {loading ? "Scraping..." : "Scrape Now"}
         </button>

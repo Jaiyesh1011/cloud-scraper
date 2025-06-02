@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
@@ -16,10 +16,12 @@ collection = db["books"]
 def home():
     return jsonify({"status": "Backend is running"}), 200
 
-@app.route("/scrape", methods=["GET"])
+@app.route("/scrape", methods=["POST"])
 def scrape():
-    url = "http://books.toscrape.com"
     try:
+        data = request.get_json()
+        url = data.get("url", "http://books.toscrape.com")  # Default if not provided
+
         res = requests.get(url, timeout=10)
         soup = BeautifulSoup(res.text, "html.parser")
         books = []
