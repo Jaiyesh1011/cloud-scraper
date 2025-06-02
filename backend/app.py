@@ -47,13 +47,16 @@ def scrape():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e), "data": []}), 500
 
-@app.route('/books', methods=['GET'])
+@app.route("/books", methods=["GET"])
 def get_books():
-    try:
-        data = list(collection.find({}, {'_id': 0}))
-        return jsonify({"status": "success", "data": data}), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e), "data": []}), 500
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("page_size", 10))
+    skip = (page - 1) * page_size
+
+    books = list(collection.find().skip(skip).limit(page_size))
+    for book in books:
+        book['_id'] = str(book['_id'])
+    return jsonify(books)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
